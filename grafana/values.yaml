@@ -146,11 +146,12 @@ podPortName: grafana
 ##
 service:
   enabled: true
-  type: ClusterIP
+  type: LoadBalancer
   port: 80
   targetPort: 3000
     # targetPort: 4181 To be used with a proxy extraContainer
-  annotations: {}
+  annotations: 
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
   labels: {}
   portName: service
 
@@ -274,8 +275,8 @@ extraContainerVolumes: []
 ##
 persistence:
   type: pvc
-  enabled: false
-  storageClassName: grafana
+  enabled: true 
+  storageClassName: gp2
   accessModes:
     - ReadWriteOnce
   size: 10Gi
