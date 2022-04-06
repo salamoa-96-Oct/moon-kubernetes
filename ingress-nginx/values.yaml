@@ -27,7 +27,8 @@ controller:
     # www-data -> uid 101
     runAsUser: 101
     allowPrivilegeEscalation: true
-
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
   # -- Use an existing PSP instead of creating one
   existingPsp: ""
 
@@ -43,8 +44,7 @@ controller:
   config: {}
 
   # -- Annotations to be added to the controller config configuration configmap.
-  configAnnotations: {}
-
+  configAnnotations: {} 
   # -- Will add custom headers before sending traffic to backends according to https://github.com/kubernetes/ingress-nginx/tree/main/docs/examples/customization/custom-headers
   proxySetHeaders: {}
 
@@ -448,7 +448,7 @@ controller:
     ##
     appProtocol: true
 
-    annotations: {}
+    annotations: {} 
     labels: {}
     # clusterIP: ""
 
@@ -865,8 +865,8 @@ defaultBackend:
     targetMemoryUtilizationPercentage: 50
 
   service:
-    annotations: {}
-
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-type: nlb 
     # clusterIP: ""
 
     # -- List of IP addresses at which the default backend service is available
@@ -877,7 +877,7 @@ defaultBackend:
     # loadBalancerIP: ""
     loadBalancerSourceRanges: []
     servicePort: 80
-    type: ClusterIP
+    type: LoadBalancer 
 
   priorityClassName: ""
   # -- Labels to be added to the default backend resources
