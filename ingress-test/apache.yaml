@@ -4,9 +4,10 @@ metadata:
   labels:
     run: http
   name: http
+  namespace: test
 spec:
   containers:
   - image: apache
     name: http
     ports:
-    - containerPort: 12345
+    - containerPort: 30303
