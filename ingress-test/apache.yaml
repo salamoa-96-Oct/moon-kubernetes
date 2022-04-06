@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: http
+  name: http
+spec:
+  containers:
+  - image: apache
+    name: http
+    ports:
+    - containerPort: 12345
