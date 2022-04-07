@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-ingress2
+  namespace: test
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: 
+      http:
+        paths:
+        - pathType: Prefix
+          backend:
+            service:
+              name: nginx-ingress2
+              port:
+                number: 80
+          path: /
+    # This section is only required if TLS is to be enabled for the Ingress
+    #tls:
+    #  - hosts:
+    #    - www.example.com
+    #    secretName: example-tls

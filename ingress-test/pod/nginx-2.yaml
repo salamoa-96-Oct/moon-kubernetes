@@ -3,11 +3,12 @@ kind: Pod
 metadata:
   labels:
     run: nginx
-  name: nginx
+    test: nginx-2
+  name: nginx-2
   namespace: test
 spec:
   containers:
   - image: nginx
     name: nginx
     ports:
-    - containerPort: 80
+    - containerPort: 30321
