@@ -1,3 +1,30 @@
+## Docker로 인증서 생성
+
+```java
+docker run -it --rm --name certbot -v '/etc/letsencrypt:/etc/letsencrypt' \
+-v '/var/lib/letsencrypt:/var/lib/letsencrypt' \
+certbot/certbot certonly -d '*.kuber.kro.kr' \
+--email mjs1212@gmail.com \
+--agree-tos --no-eff-email -d kuber.kro.kr \
+--manual \
+--preferred-challenges dns \
+--server https://acme-v02.api.letsencrypt.org/directory
+```
+
+## TLS용 secret 생성
+
+harbor tls secret 생성
+
+```java
+kubectl create secret tls [tls-name] --key private.key --cert certificate.crt
+
+-------------
+
+kubectl create -n harbor secret tls harbor-secret \   ## namespace 지정
+  --cert=/etc/letsencrypt/live/ittaehyeon95.com/fullchain.pem \ ## Cert 있는 경로 지정 fullchain.pem 파일명
+  --key=/etc/letsencrypt/live/ittaehyeon95.com/privkey.pem  ## key 있는 경로 지정 privkey.pem 파일명
+```
+
 ## Gitlab
 
 핼름 차트 등록
@@ -124,4 +151,169 @@ For more information about Jenkins Configuration as Code, visit:
 https://jenkins.io/projects/jcasc/
 
 NOTE: Consider using a custom image with pre-installed plugins
+```
+
+---
+
+## ArgoCD 설치
+
+```java
+helm repo add argocd https://argoproj.github.io/argo-helm
+helm repo update
+helm pull argocd/argo-cd
+tar xzvf argo-cd-4.5.0.tg
+
+-----------
+
+values.yaml 수정
+927 -> tls 설정 줄
+
+기존 ingresscontroller와 연동하기 위해서
+1021   ingress:
+1022     # -- Enable an ingress resource for the Argo CD server
+1023     enabled: true
+1024     # -- Additional ingress annotations
+1025     annotations: {}
+1026     # -- Additional ingress labels
+1027     labels: {}
+1028     # -- Defines which ingress controller will implement the resource
+1029     ingressClassName: nginx
+1031     # -- List of ingress hosts
+1032     ## Argo Ingress.
+1033     ## Hostnames must be provided if Ingress is enabled.
+1034     ## Secrets must be manually created in the namespace
+1035     hosts:
+1036       - argocd.kuber.kro.kr
+1037
+1038     # -- List of ingress paths
+1039     paths:
+1040       - /
+kubectl create namespace argocd
+
+helm install argocd . \
+-n argocd
+로 하려고 했으나 리다이렉션이 많아 접속이 안됨.(TS 중)
+
+급한대로 ingress말고 servicetype: LoadBalancer로 생성하여 사용 진행
+
+--------------
+NAME: argocd
+LAST DEPLOYED: Thu Apr  7 05:05:53 2022
+NAMESPACE: argocd
+STATUS: deployed
+REVISION: 1
+NOTES:
+In order to access the server UI you have the following options:
+
+1. kubectl port-forward service/argocd-server -n argocd 8080:443
+
+    and then open the browser on http://localhost:8080 and accept the certificate
+
+2. enable ingress in the values file `server.ingress.enabled` and either
+      - Add the annotation for ssl passthrough: https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/ingress.md#option-1-ssl-passthrough
+      - Add the `--insecure` flag to `server.extraArgs` in the values file and terminate SSL at your ingress: https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/ingress.md#option-2-multiple-ingress-objects-and-hosts
+
+After reaching the UI the first time you can login with username: admin and the random password generated during the installation. You can find the password by running:
+
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+
+(You should delete the initial secret afterwards as suggested by the Getting Started Guide: https://github.com/argoproj/argo-cd/blob/master/docs/getting_started.md#4-login-using-the-cli)
+```
+
+## argocd- cli 설치
+
+```java
+VERSION=v2.0.0; curl -sL -o argocd https://github.com/argoproj/argo-cd/releases/download/$VERSION/argocd-linux-amd64
+chmod +x argocd
+sudo mv argocd /usr/local/bin/argocd
+```
+
+## argocd 초기 비밀번호
+
+```java
+$ kubectl -n argo get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d && echo
+```
+
+## argocd login 정보
+
+```java
+argocd login --insecure 192.168.97.209:30800
+Username: admin
+Password:
+'admin:login' logged in successfully
+```
+
+## argocd - cluster 등록
+
+```java
+kubectl config view -o jsonpath='{.current-context}' && echo
+
+argocd login --insecure [IP-address]:30800 --username admin --password [password]
+argocd cluster add [cluster-config] --name [name] --upsert
+```
+
+## argocd -project 생성
+
+```java
+argocd proj create lma --dest "*,*" --src "*" --allow-cluster-resource "*/*"
+argocd proj create service-mesh --dest "*,*" --src "*" --allow-cluster-resource "*/*"
+```
+
+---
+
+## harbor 설치
+
+```java
+helm repo add harbor https://helm.goharbor.io
+helm repo update
+helm search repo harbor
+
+helm pull harbor/harbor
+tar xvzf harbor-1.8.2.tgz
+
+values.yaml 수정
+
+1 expose:
+  2   # Set the way how to expose the service. Set the type as "ingress",
+  3   # "clusterIP", "nodePort" or "loadBalancer" and fill the information
+  4   # in the corresponding section
+  5   type: loadBalancer
+  6   tls:
+  7     # Enable the tls or not.
+  8     # Delete the "ssl-redirect" annotations in "expose.ingress.annotations" when TLS is disabled and "expose.type" is "ingress"
+  9     # Note: if the "expose.type" is "ingress" and the tls
+ 10     # is disabled, the port must be included in the command when pull/push
+ 11     # images. Refer to https://github.com/goharbor/harbor/issues/5291
+ 12     # for the detail.
+ 13     enabled: true
+ 14     # The source of the tls certificate. Set it as "auto", "secret"
+ 15     # or "none" and fill the information in the corresponding section
+ 16     # 1) auto: generate the tls certificate automatically
+ 17     # 2) secret: read the tls certificate from the specified secret.
+ 18     # The tls certificate can be generated manually or by cert manager
+ 19     # 3) none: configure no tls certificate for the ingress. If the default
+ 20     # tls certificate is configured in the ingress controller, choose this option
+ 21     certSource: secret
+ 22     auto:
+ 23       # The common name used to generate the certificate, it's necessary
+ 24       # when the type isn't "ingress"
+ 25       commonName: ""
+ 26     secret:
+ 27       # The name of secret which contains keys named:
+ 28       # "tls.crt" - the certificate
+ 29       # "tls.key" - the private key
+ 30       secretName: "harbor-secret"
+ 31       # The name of secret which contains keys named:
+ 32       # "tls.crt" - the certificate
+ 33       # "tls.key" - the private key
+ 34       # Only needed when the "expose.type" is "ingress".
+ 35       notarySecretName: ""
+ 36   ingress:
+ 37     hosts:
+ 38       core: core.kuber.kro.kr
+ 39       notary: notary.kuber.kro.kr
+
+122 externalURL: https://harbor.kuber.kro.kr
+
+helm install harbor . -n harbor
 ```
