@@ -711,10 +711,10 @@ upgradeCheck:
       cpu: 50m
 
 ## Settings to for the Let's Encrypt ACME Issuer
-# certmanager-issuer:
-#   # The email address to register certificates requested from Let's Encrypt.
-#   # Required if using Let's Encrypt.
-#   email: email@example.com
+certmanager-issuer:
+   # The email address to register certificates requested from Let's Encrypt.
+   # Required if using Let's Encrypt.
+  email: mjs1212@asdfsad.com
 
 ## Installation & configuration of jetstack/cert-manager
 ## See requirements.yaml for current version
@@ -749,7 +749,7 @@ nginx-ingress:
       server-tokens: "false"
     service:
       externalTrafficPolicy: "Local"
-    ingressClassByName: false
+    ingressClassByName: ""
     ingressClassResource:
       name: '{{ include "ingress.class.name" $ }}'
     resources:
@@ -947,7 +947,7 @@ redis:
 postgresql:
   postgresqlUsername: gitlab
   # This just needs to be set. It will use a second entry in existingSecret for postgresql-postgres-password
-  postgresqlPostgresPassword: bogus
+  postgresqlPostgresPassword: password
   install: true
   postgresqlDatabase: gitlabhq_production
   image:
