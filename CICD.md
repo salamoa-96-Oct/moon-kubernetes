@@ -21,8 +21,8 @@ kubectl create secret tls [tls-name] --key private.key --cert certificate.crt
 -------------
 
 kubectl create -n harbor secret tls harbor-secret \   ## namespace 지정
-  --cert=/etc/letsencrypt/live/ittaehyeon95.com/fullchain.pem \ ## Cert 있는 경로 지정 fullchain.pem 파일명
-  --key=/etc/letsencrypt/live/ittaehyeon95.com/privkey.pem  ## key 있는 경로 지정 privkey.pem 파일명
+  --cert=/etc/letsencrypt/live/kuber.kro.kr/fullchain.pem \ ## Cert 있는 경로 지정 fullchain.pem 파일명
+  --key=/etc/letsencrypt/live/kuber.kro.kr/privkey.pem  ## key 있는 경로 지정 privkey.pem 파일명
 ```
 
 ## Gitlab
