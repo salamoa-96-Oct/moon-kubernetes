@@ -91,7 +91,7 @@ controller:
   # The Protocol can be overwritten by specifying `controller.jenkinsUrlProtocol`.
   # jenkinsUrlProtocol: "https"
   # If you are not using the provided ingress you can specify `controller.jenkinsUrl` to change the url definition.
-  jenkinsUrl: "http://jenkins.kuber.kro.kr"
+  #jenkinsUrl: "http://jenkins.kuber.kro.kr"
   # If you set this prefix and use ingress controller then you might want to set the ingress path below
   # jenkinsUriPrefix: "/jenkins"
   # Enable pod security context (must be `true` if podSecurityContextOverride, runAsUser or fsGroup are set)
@@ -427,7 +427,7 @@ controller:
     #     serviceName: ssl-redirect
     #     servicePort: use-annotation
     #  - backend:
-    #     serviceName: 
+    #     serviceName: "jenkins"
         # Don't use string here, use only integer value!
         #     servicePort: 8080
     # For Kubernetes v1.14+, use 'networking.k8s.io/v1beta1'
@@ -438,16 +438,16 @@ controller:
       kubernetes.io/ingress.class: nginx
       ingress.kubernetes.io/rewrite-target: /
       kubernetes.io/ingress.allow-http: "true"
-    #  kubernetes.io/tls-acme: "true"
+      kubernetes.io/tls-acme: "true"
       ingressClassName: nginx
     # Set this path to jenkinsUriPrefix above or use annotations to rewrite path
-      path: "/"
+      path: "/jenkins"
     # configures the hostname e.g. jenkins.example.com
-    hostName: "" 
+    hostName: "jenkins.kuber.kro.kr" 
     tls:
-    # - secretName: jenkins.cluster.local
-    #   hosts:
-    #     - jenkins.cluster.local
+     - secretName: jenkins-secret
+       hosts:
+         - jenkins.kuber.kro.kr
 
   # often you want to have your controller all locked down and private
   # but you still want to get webhooks from your SCM
