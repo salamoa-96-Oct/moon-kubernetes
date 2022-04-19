@@ -927,9 +927,9 @@ server:
   ## Certificate configuration
   certificate:
     # -- Deploy a Certificate resource (requires cert-manager)
-    enabled: false
+    enabled: true
     # -- Certificate primary domain (commonName)
-    domain: argocd.example.com
+    domain: argocd.kuber.kro.kr
     # -- The requested 'duration' (i.e. lifetime) of the Certificate. Value must be in units accepted by Go time.ParseDuration
     duration: ""
     # -- How long before the currently issued certificate's expiry cert-manager should renew the certificate. Value must be in units accepted by Go time.ParseDuration
@@ -1022,17 +1022,21 @@ server:
     # -- Enable an ingress resource for the Argo CD server
     enabled: false
     # -- Additional ingress annotations
-    annotations: {}
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      ingress.kubernetes.io/rewrite-target: /
+      kubernetes.io/ingress.allow-http: "true"
+      kubernetes.io/tls-acme: "true"
     # -- Additional ingress labels
     labels: {}
     # -- Defines which ingress controller will implement the resource
-    ingressClassName: ""
+    ingressClassName: "nginx"
 
     # -- List of ingress hosts
     ## Argo Ingress.
     ## Hostnames must be provided if Ingress is enabled.
     ## Secrets must be manually created in the namespace
-    hosts:
+    hosts: argocd.kuber.kro.kr
             #  - argocd12.kuber.kro.kr
     # -- List of ingress paths
     paths:
@@ -1041,7 +1045,7 @@ server:
     pathType: Prefix
     # -- Additional ingress paths
     extraPaths:
-      []
+      
       # - path: /*
       #   backend:
       #     serviceName: ssl-redirect
@@ -1057,10 +1061,10 @@ server:
 
     # -- Ingress TLS configuration
     tls:
-      []
-      # - secretName: argocd-tls-certificate
-      #   hosts:
-      #     - argocd.example.com
+      
+       - secretName: argocd-secret 
+         hosts:
+           - argocd.kuber.kro.kr
 
     # -- Uses `server.service.servicePortHttps` instead `server.service.servicePortHttp`
     https: false
