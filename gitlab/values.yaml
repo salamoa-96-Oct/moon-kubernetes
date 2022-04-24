@@ -64,7 +64,7 @@ global:
   ## https://docs.gitlab.com/charts/charts/globals#configure-ingress-settings
   ingress:
     apiVersion: ""
-    configureCertmanager: false 
+    configureCertmanager: true
     provider: nginx
     # class:
     annotations: {}
@@ -87,7 +87,7 @@ global:
   ## Secret created according to https://docs.gitlab.com/charts/installation/secrets#initial-root-password
   ## If allowing shared-secrets generation, this is OPTIONAL.
   initialRootPassword:
-    secret: RELEASE-gitlab-initial-root-password
+    secret: gitlab-root-password 
     key: password
 
   ## https://docs.gitlab.com/charts/charts/globals#configure-postgresql-settings
@@ -714,12 +714,12 @@ upgradeCheck:
 certmanager-issuer:
    # The email address to register certificates requested from Let's Encrypt.
    # Required if using Let's Encrypt.
-  email: mjs1212@asdfsad.com
+  email: mjs1212@naver.com
 
 ## Installation & configuration of jetstack/cert-manager
 ## See requirements.yaml for current version
 certmanager:
-  installCRDs: true
+  installCRDs: true 
   nameOverride: certmanager
   # Install cert-manager chart. Set to false if you already have cert-manager
   # installed or if you are not using cert-manager.
@@ -749,7 +749,7 @@ nginx-ingress:
       server-tokens: "false"
     service:
       externalTrafficPolicy: "Local"
-    ingressClassByName: ""
+    ingressClassByName: false
     ingressClassResource:
       name: '{{ include "ingress.class.name" $ }}'
     resources:
@@ -947,7 +947,7 @@ redis:
 postgresql:
   postgresqlUsername: gitlab
   # This just needs to be set. It will use a second entry in existingSecret for postgresql-postgres-password
-  postgresqlPostgresPassword: password
+  postgresqlPostgresPassword: bogus
   install: true
   postgresqlDatabase: gitlabhq_production
   image:
