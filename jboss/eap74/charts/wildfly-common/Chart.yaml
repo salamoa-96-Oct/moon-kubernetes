@@ -1,0 +1,6 @@
+apiVersion: v2
+appVersion: 1.0.0
+description: A library chart for WildFly-based applications
+name: wildfly-common
+type: library
+version: 1.3.0
