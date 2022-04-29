@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: http
+  name: http
+  namespace: test
+spec:
+  containers:
+  - image: apache
+    name: http
+    ports:
+    - containerPort: 30303
