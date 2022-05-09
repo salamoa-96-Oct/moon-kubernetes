@@ -85,7 +85,7 @@ tomcatUsername: user
 ## @param tomcatPassword Tomcat admin password
 ## ref: https://github.com/bitnami/bitnami-docker-tomcat#creating-a-custom-user
 ##
-tomcatPassword: ""
+tomcatPassword: "password"
 ## @param tomcatAllowRemoteManagement Enable remote access to management interface
 ## ref: https://github.com/bitnami/charts/tree/master/bitnami/tomcat#configuration
 ##
@@ -443,7 +443,7 @@ service:
 ingress:
   ## @param ingress.enabled Enable ingress controller resource
   ##
-  enabled: false
+  enabled: true
   ## DEPRECATED: Use ingress.annotations instead of ingress.certManager
   ## certManager: false
   ##
@@ -462,7 +462,8 @@ ingress:
   ##   kubernetes.io/ingress.class: nginx
   ##   cert-manager.io/cluster-issuer: cluster-issuer-name
   ##
-  annotations: {}
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
   ## @param ingress.tls Enable TLS configuration for the hostname defined at `ingress.hostname` parameter
   ## TLS certificates will be retrieved from a TLS secret with name: {{- printf "%s-tls" .Values.ingress.hostname }}
   ## You can use the ingress.secrets parameter to create this TLS secret, relay on cert-manager to create it, or
@@ -502,7 +503,7 @@ ingress:
   ## This is supported in Kubernetes 1.18+ and required if you have more than one IngressClass marked as the default for your cluster .
   ## ref: https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/
   ##
-  ingressClassName: ""
+  ingressClassName: nginx
   ## @param ingress.secrets If you're providing your own certificates, please use this to add the certificates as secrets
   ## key and certificate should start with -----BEGIN CERTIFICATE----- or -----BEGIN RSA PRIVATE KEY-----
   ## name should line up with a secretName set further up
