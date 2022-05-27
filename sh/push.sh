@@ -1,6 +1,6 @@
 docker login https://harbor.kuber.kro.kr
-harbor
-Harbor12345
+[harbor-id]
+[harbor-password]
 
 echo ' Private repository Success Login '
 
