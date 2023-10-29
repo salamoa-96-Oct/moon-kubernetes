@@ -92,7 +92,7 @@ $ wget https://raw.githubusercontent.com/jenkins-infra/jenkins.io/master/content
 14     meta.helm.sh/release-name : jenkins
 15     meta.helm.sh/release-namespace : jenkinsci
 이유는 모르겠지만 annotations을 설정하지 않으면 핼름 설치가 안됨.
-아무래도 private에 있다 보니 권한 문제인 것 같음
+helm으로 설치 시 어노테이션을 사용하여 helm에서 관리를 하여 설정하여 핼름에서 관리하도록 설정
 
 $ kubectl apply -f jenkins-sa.yaml
 
